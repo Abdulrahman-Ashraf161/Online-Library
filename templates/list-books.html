@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"List of Books" }}</title>
+    <link rel="stylesheet" href="{% static 'css/list_of_books.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <!-- CSRF token for AJAX POST requests -->
+    <script>
+      const csrfToken = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/list-books.js' %}"></script>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="sub-navbar">
+      <ul>
+        {% for category_info in categories %}
+        <li>
+          <a href="#{{ category_info.category|lower }}"
+            >{{ category_info.category }} ({{ category_info.count }})</a
+          >
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <section>
+      <h1>{{ page_title|default:"Available Books" }}</h1>
+      <div class="library-search">
+        <form
+          class="search-form"
+          id="search-form"
+          action="{% url 'search_books' %}"
+          method="GET"
+        >
+          <div class="search-container">
+            <select class="search-category" name="search_by">
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+              <option value="category">Category</option>
+            </select>
+            <input
+              type="text"
+              class="search-input"
+              name="q"
+              placeholder="Search books..."
+              aria-label="Search books"
+              value="{{ query|default:'' }}"
+            />
+            <button type="submit" class="search-button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {% if is_search %}
+      <h2>Search Results for "{{ query }}"</h2>
+      <div class="book-list" id="search-results-list">
+        {% for book in books %}
+        <div class="book-item" data-id="{{ book.id }}">
+          <img
+            src="{% if book.image_url %}{{ book.image_url }}{% else %}{% static 'photos/default_book.png' %}{% endif %}"
+            alt="{{ book.name }}"
+          />
+          <h3>{{ book.name }}</h3>
+          <p>Author: {{ book.author }}</p>
+          <p>Category: {{ book.category }}</p>
+          <p>
+            Status: {% if book.is_available %}Available{% else %}Borrowed{%
+            endif %}
+          </p>
+          <a href="{% url 'view_book_details' book.id %}" class="details-button"
+            >View Details</a
+          >
+          {% if user.is_authenticated and not user.is_admin and
+          book.is_available %}
+          <button class="borrow-button" data-book-id="{{ book.id }}">
+            Borrow
+          </button>
+
+          <a href="{% url 'edit_book' book.id %}" class="edit-button">Edit</a>
+          <button
+            class="delete-button"
+            data-book-id="{{ book.id }}"
+            data-delete-url="{% url 'delete_book' book.id %}"
+          >
+            Delete
+          </button>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p>No books found matching your search criteria.</p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- Books listing by category using the grouped data -->
+      {% for category, category_books in books_by_category.items %}
+      <h2 id="{{ category|lower }}">{{ category }} Books</h2>
+      <div class="book-list" data-category="{{ category }}">
+        {% for book in category_books %}
+        <div class="book-item" data-id="{{ book.id }}">
+          <img
+            src="{% if book.image_url %}{{ book.image_url }}{% else %}{% static 'photos/default_book.png' %}{% endif %}"
+            alt="{{ book.name }}"
+          />
+          <h3>{{ book.name }}</h3>
+          <p>Author: {{ book.author }}</p>
+          <p>Category: {{ book.category }}</p>
+          <p>
+            Status: {% if book.is_available %}Available{% else %}Borrowed{%
+            endif %}
+          </p>
+          <a href="{% url 'view_book_details' book.id %}" class="details-button"
+            >View Details</a
+          >
+          {% if user.is_authenticated and not user.is_admin and
+          book.is_available %}
+          <button class="borrow-button" data-book-id="{{ book.id }}">
+            Borrow
+          </button>
+
+          <a href="{% url 'edit_book' book.id %}" class="edit-button">Edit</a>
+          <button
+            class="delete-button"
+            data-book-id="{{ book.id }}"
+            data-delete-url="{% url 'delete_book' book.id %}"
+          >
+            Delete
+          </button>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p>No books available in this category.</p>
+        {% endfor %}
+      </div>
+      {% empty %}
+      <p>No books available in the library.</p>
+      {% endfor %} {% endif %}
+    </section>
+
+    <!-- Modal for messages -->
+    <div id="messageModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-button">×</span>
+        <p id="modalMessageText"></p>
+      </div>
+    </div>
+  </body>
+</html>

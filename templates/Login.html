@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Online Library</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="login-section">
+      <div class="login-container">
+        <h2>Login</h2>
+        <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-button">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{% url 'signup' %}">Register here</a></p>
+      </div>
+    </section>
+
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/login.js' %}"></script>
+  </body>
+</html>

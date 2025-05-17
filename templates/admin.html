@@ -1,0 +1,307 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Books Management | Online Library</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Admin Container -->
+    <div class="container">
+      <!-- Authentication Section -->
+      <div class="auth-section">
+        <h1><i class="fas fa-lock"></i> Admin Authentication</h1>
+        <form class="auth-form" method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <label for="admin-username">Admin Username</label>
+          <input
+            type="text"
+            id="admin-username"
+            name="username"
+            placeholder="Enter admin username"
+            required
+          />
+
+          <label for="admin-password">Password</label>
+          <input
+            type="password"
+            id="admin-password"
+            name="password"
+            placeholder="Enter password"
+            required
+          />
+
+          <button type="submit" class="auth-btn">
+            <i class="fas fa-sign-in-alt"></i> Authenticate
+          </button>
+        </form>
+      </div>
+
+      <!-- Admin Content (shown after authentication) -->
+      <div class="admin-content">
+        <div class="admin-header">
+          <h1><i class="fas fa-book"></i> Books Management</h1>
+          <div class="admin-actions">
+            <button class="btn btn-primary" id="refresh-btn">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Add New Book Form -->
+        <div class="add-book-form">
+          <h2><i class="fas fa-plus-circle"></i> Add New Book</h2>
+          <form id="new-book-form">
+            {% csrf_token %}
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="book-title">Title*</label>
+                <input
+                  type="text"
+                  id="book-title"
+                  name="title"
+                  placeholder="Book title"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="book-author">Author*</label>
+                <input
+                  type="text"
+                  id="book-author"
+                  name="author"
+                  placeholder="Author name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="book-id">ID</label>
+                <input
+                  type="text"
+                  id="book-id"
+                  name="id"
+                  placeholder="ID number"
+                />
+              </div>
+              <div class="form-group">
+                <label for="book-category">Category</label>
+                <select id="book-category" name="category">
+                  <option value="">Select category</option>
+                  <option value="kids">Kids</option>
+                  <option value="philosophy">Philosophy</option>
+                  <option value="history">History</option>
+                  <option value="technology">Technology</option>
+                  <option value="horror">Horror</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="book-image">Cover Image URL</label>
+                <input
+                  type="url"
+                  id="book-image"
+                  name="image"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div class="form-group">
+                <label for="book-pages">Pages</label>
+                <input
+                  type="number"
+                  id="book-pages"
+                  name="pages"
+                  placeholder="Number of pages"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="book-description">Description</label>
+              <textarea
+                id="book-description"
+                name="description"
+                placeholder="Book description"
+              ></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-eraser"></i> Clear
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Add Book
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Books Table -->
+        <div class="books-table">
+          <h2><i class="fas fa-list"></i> Manage Books</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Cover</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if books %} {% for book in books %}
+              <tr>
+                <td>
+                  <img
+                    src="{% if book.image_url %}{{ book.image_url }}{% else %}{% static 'photos/default_book.png' %}{% endif %}"
+                    alt="{{ book.name }}"
+                    class="book-cover"
+                  />
+                </td>
+                <td>{{ book.name }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.category|default:"Uncategorized" }}</td>
+                <td class="action-btns">
+                  <button
+                    class="btn btn-edit btn-sm edit-btn"
+                    data-id="{{ book.id }}"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button
+                    class="btn btn-delete btn-sm delete-btn"
+                    data-id="{{ book.id }}"
+                  >
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="5">
+                  No books available. Add some books to get started!
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Book Modal -->
+    <div class="modal" id="edit-modal">
+      <div class="modal-content">
+        <button class="close-modal">&times;</button>
+        <h2><i class="fas fa-edit"></i> Edit Book</h2>
+        <form id="edit-book-form">
+          {% csrf_token %}
+          <input type="hidden" id="edit-book-id" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit-book-title">Title*</label>
+              <input type="text" id="edit-book-title" name="title" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-book-author">Author*</label>
+              <input type="text" id="edit-book-author" name="author" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-book-id">ID</label>
+              <input type="text" id="edit-book-id" name="id" />
+            </div>
+            <div class="form-group">
+              <label for="edit-book-category">Category</label>
+              <select id="edit-book-category" name="category">
+                <option value="">Select category</option>
+                <option value="kids">Kids</option>
+                <option value="philosophy">Philosophy</option>
+                <option value="history">History</option>
+                <option value="technology">Technology</option>
+                <option value="horror">Horror</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-book-image">Cover Image URL</label>
+              <input type="url" id="edit-book-image" name="image" />
+            </div>
+            <div class="form-group">
+              <label for="edit-book-pages">Pages</label>
+              <input type="number" id="edit-book-pages" name="pages" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-book-description">Description</label>
+            <textarea id="edit-book-description" name="description"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary close-modal-btn">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+      <div class="modal-content">
+        <button class="close-modal">&times;</button>
+        <h2><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h2>
+        <p>
+          Are you sure you want to delete "<span id="delete-book-title"></span>"
+          by <span id="delete-book-author"></span>?
+        </p>
+        <p class="text-danger">This action cannot be undone.</p>
+        <input type="hidden" id="delete-book-id" />
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary close-modal-btn">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="confirm-delete">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/admin.js' %}"></script>
+  </body>
+</html>

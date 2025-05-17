@@ -1,0 +1,91 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile - Online Library</title>
+    <link rel="stylesheet" href="{% static 'css/profile-books-style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="edit-profile-section">
+        <h2>✏️ Edit Profile</h2>
+        <br />
+        <form class="edit-profile-form" method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="edit-field">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="first_name" value="{{ user.first_name }}" />
+          </div>
+          <div class="edit-field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="last_name" value="{{ user.last_name }}" />
+          </div>
+          <div class="edit-field">
+            <label for="birthdate">Birthdate</label>
+            <input type="date" id="birthdate" name="birthdate" value="{{ user.profile.birthdate|date:'Y-m-d' }}" />
+          </div>
+          <div class="edit-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" />
+          </div>
+          <div class="edit-field">
+            <label for="profilePicture">Profile Picture</label>
+            <input type="file" id="profilePicture" name="profile_picture" accept="image/*" />
+            <img
+              id="profilePicturePreview"
+              src=""
+              alt="Profile Picture Preview"
+              style="display: none; max-width: 100px; margin-top: 10px"
+            />
+          </div>
+          <button type="submit" class="save-button">Save</button>
+        </form>
+      </section>
+    </main>
+    
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/edit-profile.js' %}"></script>
+  </body>
+</html>

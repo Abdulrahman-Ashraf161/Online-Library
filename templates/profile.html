@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile - Online Library</title>
+    <link rel="stylesheet" href="{% static 'css/profile-books-style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="profile-section">
+        <h2>👤 My Profile</h2>
+        <br />
+        <div class="profile-header">
+          <img
+            id="profile-picture"
+            src="{% static 'photos/default_profile.jpg' %}"
+            alt="Profile Picture"
+          />
+          <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+          <br /><br />
+        </div>
+        <div class="profile-options">
+          <div class="profile-option">
+            <a href="{% url 'edit_profile' %}">Edit Profile</a>
+            <i class="fas fa-user-edit"></i>
+          </div>
+          <div class="profile-option">
+            <a href="{% url 'my_borrowed_books' %}">Borrowed Books</a>
+            <i class="fas fa-book"></i>
+          </div>
+          <div class="profile-option">
+            <a href="{% url 'change_password' %}">Change Password</a>
+            <i class="fas fa-lock"></i>
+          </div>
+          <div class="sign-out">
+            <a href="{% url 'logout' %}">Sign Out</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+  </body>
+</html>
