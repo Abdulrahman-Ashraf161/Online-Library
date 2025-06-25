@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ book.name }} | Online Library</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/view_book_styles.css' %}" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'my_borrowed_books' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Book Details Content -->
+    <main>
+      <section class="book-details">
+        <h2>Book Details</h2>
+        <div class="book-details-content">
+          <div class="book-cover">
+            {% if book.image_url %}
+            <img src="{{ book.image_url }}" alt="{{ book.name }}" />
+            {% else %}
+            <img
+              src="{% static 'photos/default_book.png' %}"
+              alt="{{ book.name }}"
+            />
+            {% endif %}
+          </div>
+
+          <div class="book-info">
+            <h3 class="book-title">{{ book.name }}</h3>
+            <p class="book-author">by {{ book.author }}</p>
+
+            <div class="details-grid">
+              <div class="detail-label">ID:</div>
+              <div class="detail-value">{{ book.id }}</div>
+              <div class="detail-label">Category:</div>
+              <div class="detail-value">{{ book.category }}</div>
+              <div class="detail-label">Quantity:</div>
+              <div class="detail-value book-quantity">{{ book.quantity }} copies</div>
+              <div class="detail-label">Status:</div>
+              <div class="detail-value">
+                <span
+                  class="status {% if book.is_available %}available{% else %}not-available{% endif %}"
+                >
+                  {% if book.is_available %}Available{% else %}Not Available{% endif %}
+                </span>
+              </div>
+            </div>
+
+            <div class="description">
+              <h4>Description</h4>
+              <p>{{ book.description|default:"No description available." }}</p>
+            </div>
+
+            {% if user.is_authenticated and not user.is_admin and book.is_available %}
+            <button class="borrow-button" data-book-id="{{ book.id }}">
+              <i class="fas fa-book"></i> Borrow Book
+            </button>
+            {% elif user.is_authenticated and not user.is_admin %}
+            <button class="borrow-button not-available" disabled>
+              <i class="fas fa-times"></i> Not Available
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{% static 'js/view-book-details.js' %}"></script>
+  </body>
+</html>
+

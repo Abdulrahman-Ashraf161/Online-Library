@@ -1,0 +1,290 @@
+:root {
+  --primary-color: #1a2a3a;
+  --secondary-color: #0d6efd;
+  --accent-color: #0dcaf0;
+  --success-color: #27ae60;
+  --warning-color: #f39c12;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --border-radius: 10px;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --header-height: 60px; /* Define header height */
+  --sub-navbar-height: 50px; /* Define sub-navbar height */
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: url("https://i.etsystatic.com/30702781/r/il/37eeaf/5585677134/il_1588xN.5585677134_ofgm.jpg")
+      center/cover no-repeat fixed,
+    #1a2a3a;
+  color: #fdfdfd;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height); /* Set fixed height */
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+nav ul li {
+  margin: 0 16px;
+}
+
+nav a {
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0.2rem;
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  color: #3498db;
+  text-decoration: underline;
+  text-decoration-color: #3498db;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Sub-Navigation Bar */
+.sub-navbar {
+  background-color: #000c1a;
+  padding: 10px 0;
+  position: sticky;
+  top: var(--header-height); /* Align below the header */
+  z-index: 999; /* Above content but below header */
+  box-shadow: 0 2px 6px rgba(0, 255, 255, 0.2);
+  width: 100%;
+  height: var(--sub-navbar-height); /* Fixed height */
+  display: flex; /* Ensure visibility */
+  justify-content: center;
+  align-items: center;
+}
+
+.sub-navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.sub-navbar ul li {
+  margin: 0;
+}
+
+.sub-navbar ul li a {
+  color: #ededed;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 15px;
+  transition: 0.3s;
+}
+
+.sub-navbar ul li a:hover {
+  color: #00ffff;
+  text-decoration: underline;
+}
+
+/* Main Content */
+main {
+  padding-top: calc(var(--header-height) + var(--sub-navbar-height) + 20px); /* Account for header and sub-navbar */
+  min-height: calc(100vh - 120px);
+}
+
+/* Rest of the CSS remains unchanged */
+.book-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+.book-item {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--box-shadow);
+  transition: transform 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* For Safari support */
+}
+
+.book-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.book-image {
+  margin-bottom: 15px;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+}
+
+.book-image img {
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.book-info {
+  text-align: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.book-info h3 {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  color: #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.book-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+}
+
+.details-btn,
+.borrow-btn,
+.login-to-borrow {
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  margin: 0 5px;
+}
+
+.details-btn {
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+}
+
+.borrow-btn {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+}
+
+.borrow-btn:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.login-to-borrow {
+  background-color: #555;
+  color: white;
+  text-decoration: none;
+}
+
+.details-btn:hover,
+.borrow-btn:hover:not(:disabled),
+.login-to-borrow:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.search-container form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f1f1f1;
+  padding: 12px 20px;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-container input[type="text"] {
+  border: none;
+  background: transparent;
+  padding: 10px;
+  width: 250px;
+  font-size: 16px;
+  outline: none;
+}
+
+.search-container button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.search-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Remove unused selectors */
+#technology,
+#kids,
+#philosophy,
+#horror,
+#history {
+  /* These selectors are not used in the HTML */
+  display: flex;
+}
+
+/* Rest of your existing CSS for notifications, footer, etc., remains unchanged */

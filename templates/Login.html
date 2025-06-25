@@ -1,0 +1,72 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/">Browse Books</a></li>
+          <li><a href="/dashboard/">My Books</a></li>
+          <li><a href="/#about-us">About Us</a></li>
+          <li><a href="/#services">Services</a></li>
+          <li><a href="/profile/">Profile</a></li>
+          <li>
+            <a href="/login/">Login</a> |
+            <a href="/signup/">Register</a>
+          </li>
+          <li><a href="/admin/dashboard/">Admin Panel</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <div class="login-container">
+        <h2>Login to Your Account</h2>
+        
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+        
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" id="id_username" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" id="id_password" required>
+          </div>
+          
+          <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <p class="register-link">Don't have an account? <a href="{% url 'signup' %}">Register here</a></p>
+      </div>
+    </main>
+
+    <script src="{% static 'js/login.js' %}"></script>
+  </body>
+</html>
+

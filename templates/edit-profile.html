@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile-books-style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          <li><a href="{% url 'user_dashboard' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="profile-section" style="background-color: #1e2a38; border-radius: 10px; padding: 30px; max-width: 600px; margin: 50px auto; color: white;">
+        <h2 style="color: white; margin-bottom: 30px; text-align: center;"><i class="fas fa-user-edit" style="color: #8a56e2;"></i> Edit Profile</h2>
+        
+        <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 20px;">
+          {% csrf_token %}
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" style="padding: 12px; border-radius: 5px; border: none; background-color: rgba(255, 255, 255, 0.1); color: white;">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" style="padding: 12px; border-radius: 5px; border: none; background-color: rgba(255, 255, 255, 0.1); color: white;">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" style="padding: 12px; border-radius: 5px; border: none; background-color: rgba(255, 255, 255, 0.1); color: white;">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label for="profile_picture">Profile Picture</label>
+            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="padding: 12px; border-radius: 5px; border: none; background-color: rgba(255, 255, 255, 0.1); color: white;">
+          </div>
+          
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" style="flex: 1; background-color: #00d9e6; color: white; padding: 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">Save Changes</button>
+            <a href="{% url 'profile' %}" style="flex: 1; background-color: rgba(255, 255, 255, 0.1); color: white; padding: 15px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold;">Cancel</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
+

@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header>
+      <div class="logo">
+        <span>📖</span>
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'user_dashboard' %}">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+          <li>
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Register</a>
+          </li>
+          {% endif %}
+          <li><a href="{% url 'index' %}#about-us">About Us</a></li>
+          <li><a href="{% url 'index' %}#services">Services</a></li>
+        </ul>
+      </nav>
+    </header>
+    <br /><br /><br />
+
+    <!-- Hero Section -->
+    <section class="hero" style="text-align: center;">
+      <h2 style="font-size: 2em">Discover, Read, and Borrow Books Anytime!</h2>
+      <p style="font-size: 1.3em">
+        Explore a vast collection of books from different genres and authors.
+      </p>
+      {% if not user.is_authenticated %}
+      <a href="{% url 'signup' %}" class="cta-button">Get Started</a>
+      {% endif %}
+    </section>
+
+    <br /><br /><br />
+
+    
+
+    <!-- About Us Section -->
+    <section id="about-us" class="about-us style="text-align: center;">
+      <h2 style="font-size: 2em ;text-align: center">📖 About Us</h2>
+      <p style="font-size: 1.2em">
+        Since 2019, Librain has been connecting readers with their next great
+        discovery. Explore our curated collection of over 50,000 titles,
+        seamlessly borrow e-books and audiobooks with one-click access, and
+        enjoy intelligent features including personalized recommendations and
+        offline reading.
+      </p>
+      <p style="font-size: 1.2em">
+        What began as a university initiative to democratize access to
+        literature has grown into an award-winning digital platform serving more
+        than 500,000 readers across 30 countries - combining innovative
+        technology with our enduring mission to make knowledge accessible to
+        all.
+      </p>
+    </section>
+    <br /><br /><br />
+
+    <!-- Our Services Section -->
+    <section id="services" class="services">
+      <h2>📚 Our Services</h2>
+      <div class="services-container">
+        <div class="service">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2417/2417789.png"
+            alt="Borrow Books"
+          />
+          <h3>Easy Book Borrowing</h3>
+          <p>
+            Borrow books seamlessly with one-click access to e-books and
+            audiobooks.
+          </p>
+        </div>
+        <div class="service">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/10733/10733354.png"
+            alt="Personalized Recommendations"
+          />
+          <h3>Personalized Recommendations</h3>
+          <p>Get AI-powered book suggestions based on your reading history.</p>
+        </div>
+        <div class="service">
+          <img
+            src="https://icon-library.com/images/icon-reading/icon-reading-1.jpg"
+            alt="Offline Reading"
+          />
+          <h3>Offline Reading Mode</h3>
+          <p>
+            Download your favorite books and read anytime, anywhere without the
+            internet.
+          </p>
+        </div>
+        <div class="service">
+          <img
+            src="{% static 'photos/Admin Panal Icone.png' %}"
+            alt="Admin Panel"
+          />
+          <h3>Admin Management</h3>
+          <p>
+            Admins can manage books, users, and library settings efficiently.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <br /><br /><br />
+
+    <footer class="enhanced-library-footer">
+      <div class="footer-grid">
+        <!-- Contact Section -->
+        <div class="footer-section">
+          <h3 class="footer-heading">Contact Us</h3>
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>contact@onlinelibrary.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-phone"></i>
+              <span>+1 (555) 123-4567</span>
+            </div>
+            <div class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>123 Library St. Bookville</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h3 class="footer-heading">Quick Links</h3>
+          <nav class="footer-nav">
+            <ul>
+              <li>
+                <a href="{% url 'index' %}"><i class="fas fa-home"></i> Home</a>
+              </li>
+              <li>
+                <a href="{% url 'user_list_books' %}"
+                  ><i class="fas fa-book"></i> Browse Books</a
+                >
+              </li>
+              <li>
+                <a href="#about-us"
+                  ><i class="fas fa-info-circle"></i> About Us</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fas fa-question-circle"></i> Help Center</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-section">
+          <h3 class="footer-heading">Follow Us</h3>
+          <div class="social-media">
+            <a
+              href="http://www.youtube.com/@AudioBooksOffice"
+              class="social-link youtube"
+              aria-label="YouTube"
+            >
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a
+              href="https://www.facebook.com/share/g/19otLrSjSc/"
+              class="social-link facebook"
+              aria-label="Facebook"
+            >
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a
+              href="https://t.me/ebooksar"
+              class="social-link telegram"
+              aria-label="Telegram"
+            >
+              <i class="fab fa-telegram-plane"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="copyright">© 2025 Online Library. All rights reserved.</div>
+        <div class="legal-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Modal for messages -->
+    <div id="messageModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-button">×</span>
+        <p id="modalMessageText"></p>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const csrfToken = "{{ csrf_token }}";
+
+        function showModalMessage(message, isSuccess = true) {
+          const modal = document.getElementById("messageModal");
+          const modalMessageText = document.getElementById("modalMessageText");
+          const closeButton = modal.querySelector(".close-button");
+
+          modalMessageText.textContent = message;
+          modalMessageText.className = isSuccess
+            ? "success-message"
+            : "error-message";
+          modal.style.display = "block";
+
+          closeButton.onclick = function () {
+            modal.style.display = "none";
+          };
+          window.onclick = function (event) {
+            if (event.target == modal) {
+              modal.style.display = "none";
+            }
+          };
+        }
+
+        document.querySelectorAll(".borrow-button").forEach((button) => {
+          button.addEventListener("click", function () {
+            const bookId = this.dataset.bookId;
+            const borrowURL = `/books/borrow/${bookId}/`;
+
+            fetch(borrowURL, {
+              method: "POST",
+              headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+            })
+              .then((response) =>
+                response
+                  .json()
+                  .then((data) => ({ status: response.status, body: data }))
+              )
+              .then(({ status, body }) => {
+                if (status === 200 && body.status === "success") {
+                  showModalMessage(
+                    body.message || "Book borrowed successfully!"
+                  );
+                  this.textContent = "Borrowed";
+                  this.disabled = true;
+                  const statusElement =
+                    this.closest(".book-item").querySelector(".status");
+                  if (statusElement) {
+                    statusElement.textContent = "Borrowed";
+                    statusElement.classList.remove("Available-Now");
+                    statusElement.classList.add("Not-Available");
+                  }
+                } else {
+                  showModalMessage(
+                    body.message || "Failed to borrow book.",
+                    false
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error borrowing book:", error);
+                showModalMessage("An error occurred. Please try again.", false);
+              });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
+
+

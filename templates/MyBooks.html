@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Borrowed Books</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/my-books.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <span class="logo-text">Online Library</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+          <li><a href="{% url 'user_dashboard' %}" class="active">My Books</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+          {% if user.is_admin %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+    <br><br><br><br>
+    <main>
+      <section class="books-section">
+        <h1>📚 My Borrowed Books</h1>
+
+        <div class="book-list">
+          <!-- JavaScript will populate this section -->
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading your books...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/my-books.js' %}"></script>
+  </body>
+</html>
+
+
+

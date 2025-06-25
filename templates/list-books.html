@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Books - Online Library</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{% static 'css/list_of_books.css' %}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+      <a href="{% url 'index' %}" class="logo">📚 Online Library</a>
+      <nav>
+        <ul>
+          <li><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'user_list_books' %}" class="active">Browse Books</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'user_dashboard' %}">My Books</a></li>
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+            {% if user.is_admin %}
+              <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+            {% endif %}
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'signup' %}">Register</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Sub Navigation Bar for Categories -->
+    <div class="sub-navbar">
+      <ul>
+        <li><a href="{% url 'user_list_books' %}?category=all">All Books</a></li>
+        <li><a href="{% url 'user_list_books' %}?category=Friendly">Friendly</a></li>
+        <li><a href="{% url 'user_list_books' %}?category=technology">Technology</a></li>
+        <li><a href="{% url 'user_list_books' %}?category=history">History</a></li>
+        <li><a href="{% url 'user_list_books' %}?category=horror">Horror</a></li>
+      </ul>
+    </div>
+
+    <main>
+      <div class="container">
+        <h1>Browse Books</h1>
+        
+        {% csrf_token %}
+        
+        <div class="search-container">
+          <form action="{% url 'search_books' %}" method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Search books..." value="{{ query|default:'' }}">
+            <button type="submit">Search</button>
+          </form>
+        </div>
+        
+        <div class="book-list">
+          {% for book in books %}
+          <div class="book-item" data-id="{{ book.id }}">
+            <div class="book-image">
+              {% if book.image_url %}
+              <img src="{{ book.image_url }}" alt="{{ book.name }}" />
+              {% else %}
+              <img src="{% static 'photos/default_book.png' %}" alt="{{ book.name }}" />
+              {% endif %}
+            </div>
+            <div class="book-info">
+              <h3>{{ book.name }}</h3>
+              <p class="status-text">
+                <span class="status {% if book.quantity > 0 %}available{% else %}not-available{% endif %}">
+                  {% if book.quantity > 0 %}Available{% else %}Not Available{% endif %}
+                </span>
+              </p>
+            </div>
+            <div class="book-actions">
+              <a href="{% url 'view_book_details' book.id %}" class="details-btn">Details</a>
+              {% if user.is_authenticated %} 
+                {% if book.quantity > 0 %}
+                <button type="button" class="borrow-btn" data-book-id="{{ book.id }}">Borrow</button>
+                {% else %}
+                <button type="button" class="borrow-btn" disabled>Not Available</button>
+                {% endif %} 
+              {% else %}
+                <a href="{% url 'login' %}" class="login-to-borrow">Login to Borrow</a>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          {% if books|length == 0 %}
+          <p class="no-books">No books found.</p>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+
+    <script src="{% static 'js/list-books.js' %}"></script>
+</body>
+</html>
+
+
+
+
+

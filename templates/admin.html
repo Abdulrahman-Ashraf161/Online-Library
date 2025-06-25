@@ -1,0 +1,382 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="{% static 'js/notifications.js' %}"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+<header>
+  <a href="{% url 'index' %}" class="logo">📚 Online Library</a>
+  <nav>
+    <ul>
+      <li><a href="{% url 'index' %}">Home</a></li>
+      <li><a href="{% url 'user_list_books' %}">Browse Books</a></li>
+      <li><a href="{% url 'user_dashboard' %}">My Books</a></li>
+
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      {% else %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}">Register</a></li>
+      {% endif %}
+
+      {% if user.is_admin %}
+        <li><a href="{% url 'admin_dashboard' %}" class="active">Admin Panel</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</header>
+
+
+    <div class="container">
+      <div class="admin-header">
+        <h1>📋 Books Management</h1>
+        <button id="refresh-btn" class="btn btn-refresh">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <!-- New Statistics Section -->
+      <div class="admin-stats">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ total_books }}</div>
+            <div class="stat-label">Total Books</div>
+          </div>
+          <div class="stat-bg">
+            <i class="fas fa-book"></i>
+          </div>
+        </div>
+        
+        <div class="stat-card stat-available">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ available_books }}</div>
+            <div class="stat-label">Available Books</div>
+          </div>
+          <div class="stat-bg">
+            <i class="fas fa-check-circle"></i>
+          </div>
+        </div>
+        
+        <div class="stat-card stat-borrowed">
+          <div class="stat-icon">
+            <i class="fas fa-hand-holding-heart"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ borrowed_books }}</div>
+            <div class="stat-label">Borrowed Books</div>
+          </div>
+          <div class="stat-bg">
+            <i class="fas fa-hand-holding-heart"></i>
+          </div>
+        </div>
+        
+        {% if total_users %}
+        <div class="stat-card stat-users">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-bg">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="admin-content" style="display: block;">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="add-book-section">
+          <h2><i class="fas fa-plus-circle"></i> Add New Book</h2>
+          <form id="new-book-form" class="add-book-form">
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group">
+                <label for="id_name">Title*</label>
+                <input type="text" name="name" id="id_name" required placeholder="Book title" />
+              </div>
+              <div class="form-group">
+                <label for="id_author">Author*</label>
+                <input type="text" name="author" id="id_author" required placeholder="Author name" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="id_category">Category</label>
+                <select name="category" id="id_category">
+                  <option value="">Select category</option>
+                  <option value="Fiction">Fiction</option>
+                  <option value="Non-Fiction">Non-Fiction</option>
+                  <option value="Science Fiction">Science Fiction</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Mystery">Mystery</option>
+                  <option value="Romance">Romance</option>
+                  <option value="Thriller">Thriller</option>
+                  <option value="Biography">Biography</option>
+                  <option value="History">History</option>
+                  <option value="Self-Help">Self-Help</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="id_quantity">Quantity</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  id="id_quantity"
+                  min="0"
+                  value="1"
+                  placeholder="Number of copies"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="id_image_url">Cover Image URL</label>
+                <input
+                  type="text"
+                  name="image_url"
+                  id="id_image_url"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            </div>
+            <div class="form-row full-width">
+              <div class="form-group">
+                <label for="id_description">Description</label>
+                <textarea
+                  name="description"
+                  id="id_description"
+                  rows="4"
+                  placeholder="Book description"
+                ></textarea>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group checkbox-group">
+                <label for="id_is_available" class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="is_available"
+                    id="id_is_available"
+                    checked
+                  />
+                  Available for borrowing
+                </label>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Add Book</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Books Management Section -->
+        <div class="admin-section">
+          <h2><i class="fas fa-book"></i> Books Management</h2>
+          
+          <div class="books-table-container">
+            <table class="books-table">
+              <thead>
+                <tr>
+                  <th>Cover</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="books-table-body">
+                {% if books %}
+                  {% for book in books %}
+                  <tr>
+                    <td>
+                      {% if book.image_url %}
+                      <img src="{{ book.image_url }}" alt="{{ book.name }}" class="book-cover-thumbnail">
+                      {% else %}
+                      <img src="{% static 'photos/default_book.png' %}" alt="{{ book.name }}" class="book-cover-thumbnail">
+                      {% endif %}
+                    </td>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.category|default:"Uncategorized" }}</td>
+                    <td>{{ book.quantity }}</td>
+                    <td>
+                      <span class="status-badge {% if book.is_available %}available{% else %}not-available{% endif %}">
+                        {% if book.is_available %}Available{% else %}Not Available{% endif %}
+                      </span>
+                    </td>
+                    <td class="action-btns">
+                      <button class="btn btn-edit edit-btn" data-id="{{ book.id }}">
+                        <i class="fas fa-edit"></i> Edit
+                      </button>
+                      <button class="btn btn-delete delete-btn" data-id="{{ book.id }}">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                      <a href="{% url 'view_book_details' book.id %}" class="btn btn-view">
+                        <i class="fas fa-eye"></i> View
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr id="no-books-row">
+                    <td colspan="7" class="text-center">No books available. Add your first book using the form above.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-edit"></i> Edit Book</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <form id="edit-book-form">
+          {% csrf_token %}
+          <input type="hidden" id="edit-book-id" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-book-title">Title*</label>
+              <input type="text" id="edit-book-title" required />
+            </div>
+            <div class="form-group">
+              <label for="edit-book-author">Author*</label>
+              <input type="text" id="edit-book-author" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-book-category">Category</label>
+              <select id="edit-book-category">
+                <option value="">Select category</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Science Fiction">Science Fiction</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Romance">Romance</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Biography">Biography</option>
+                <option value="History">History</option>
+                <option value="Self-Help">Self-Help</option>
+                <option value="Technology">Technology</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-book-quantity">Quantity</label>
+              <input type="number" id="edit-book-quantity" min="0" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-book-image">Cover Image URL</label>
+              <input type="text" id="edit-book-image" />
+            </div>
+          </div>
+          <div class="form-row full-width">
+            <div class="form-group">
+              <label for="edit-book-description">Description</label>
+              <textarea id="edit-book-description" rows="4"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" class="btn btn-secondary close-modal-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-trash"></i> Delete Book</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body delete-confirmation">
+          <p>Are you sure you want to delete this book?</p>
+          <div class="book-info">
+            <p><strong>Title:</strong> <span id="delete-book-title"></span></p>
+            <p><strong>Author:</strong> <span id="delete-book-author"></span></p>
+          </div>
+          <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> This action cannot be undone.</p>
+          <input type="hidden" id="delete-book-id" />
+          {% csrf_token %}
+        </div>
+        <div class="modal-footer">
+          <button id="confirm-delete" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+          <button class="btn btn-secondary close-modal-btn">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/admin.js' %}"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
